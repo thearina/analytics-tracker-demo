@@ -1,0 +1,40 @@
+<html>
+  <head>
+    <title>My website</title>
+    <script>
+      if (!window.tracker) {
+        const queue = [];
+        window.tracker = {
+          track: (...args) => {
+            queue.push(args);
+          },
+          queue,
+        };
+      }
+
+      const script = document.createElement("script");
+      script.async = true;
+      script.src = "http://localhost:8888/tracker";
+      document.head.appendChild(script);
+
+      window.tracker.track("pageview");
+      window.tracker.track("test", "one", "two", "three");
+    </script>
+  </head>
+  <body>
+    <button onclick="tracker.track('click-button')">Click me</button>
+    <ul>
+      <li>
+        <a href="/1.html" onclick="tracker.track('click-link', '1')">1.html</a>
+      </li>
+      <li>
+        <a href="/2.html" onclick="tracker.track('click-link', '2')">2.html</a>
+      </li>
+      <li>
+        <a href="/3.html" onclick="tracker.track('click-link', '3', 'three')"
+          >3.html</a
+        >
+      </li>
+    </ul>
+  </body>
+</html>
