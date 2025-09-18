@@ -10,16 +10,30 @@ interface TrackedEvent {
   ts: number;
 }
 
+interface EventTrackerConfig {
+  flushTimeout?: number;
+  retryRequestTimeout?: number;
+  immediateThreshold?: number;
+}
+
+const DEFAULT_CONFIG: Required<EventTrackerConfig> = {
+  flushTimeout: 1000,
+  retryRequestTimeout: 1000,
+  immediateThreshold: 3,
+};
+
 class EventTracker implements Tracker {
-  private endpoint = "http://localhost:8888/track";
   private events: TrackedEvent[] = [];
   private isProcessing = false;
   private timerId: number | undefined;
-  private flushTimeout = 1000;
-  private retryRequestTimeout = 1000;
-  private immediateThreshold = 3;
+  private config: Required<EventTrackerConfig> & { endpoint: string };
 
-  constructor() {
+  constructor(endpoint: string, config: EventTrackerConfig = {}) {
+    this.config = { 
+      ...DEFAULT_CONFIG, 
+      endpoint,
+      ...config 
+    };
     // Send any pending events when the page is being hidden/closed
     const handleFinalSend = () => this.flushOnUnload();
     window.addEventListener("pagehide", handleFinalSend);
@@ -27,7 +41,6 @@ class EventTracker implements Tracker {
     // If there is a placeholder tracker with queued calls, replay them
     const temporaryTracker = window.tracker;
     if (temporaryTracker && Array.isArray(temporaryTracker.queue)) {
-      console.log("queue", temporaryTracker.queue);
       temporaryTracker.queue.forEach((args) => {
         // Defense in case the queue is malformed
         if (Array.isArray(args) && args.length > 0) {
@@ -62,7 +75,7 @@ class EventTracker implements Tracker {
     if (this.events.length === 0) return;
 
     // If at least 3 events are queued and not currently sending, flush immediately
-    if (!this.isProcessing && this.events.length >= this.immediateThreshold) {
+    if (!this.isProcessing && this.events.length >= this.config.immediateThreshold) {
       this.resetPendingFlush();
       void this.flush();
       return;
@@ -74,7 +87,7 @@ class EventTracker implements Tracker {
       this.timerId = window.setTimeout(() => {
         this.timerId = undefined;
         void this.flush();
-      }, this.flushTimeout);
+      }, this.config.flushTimeout);
     }
   }
 
@@ -88,7 +101,7 @@ class EventTracker implements Tracker {
     const events = this.events.splice(0, this.events.length);
 
     try {
-      await fetch(this.endpoint, {
+      await fetch(this.config.endpoint, {
         method: "POST",
         headers: {
           // text/plain keeps it a simple request (no preflight)
@@ -102,7 +115,7 @@ class EventTracker implements Tracker {
         // Put failed events back at the front to preserve ordering
         this.events.unshift(...events);
         this.scheduleFlush();
-      }, this.retryRequestTimeout);
+      }, this.config.retryRequestTimeout);
     } finally {
       this.isProcessing = false;
     }
@@ -125,14 +138,14 @@ class EventTracker implements Tracker {
     let beaconQueued: boolean;
     try {
       beaconQueued =
-        navigator.sendBeacon?.(this.endpoint, eventsString) ?? false;
+        navigator.sendBeacon?.(this.config.endpoint, eventsString) ?? false;
     } catch {
       beaconQueued = false;
     }
 
     if (!beaconQueued) {
       // Fire-and-forget keepalive. We can't await its result here.
-      void fetch(this.endpoint, {
+      void fetch(this.config.endpoint, {
         method: "POST",
         headers: { "Content-Type": "text/plain" },
         keepalive: true,
@@ -145,4 +158,4 @@ class EventTracker implements Tracker {
 }
 
 // Replace placeholder with real tracker instance
-window.tracker = new EventTracker();
+window.tracker = new EventTracker("http://localhost:8888/track");
