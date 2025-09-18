@@ -23,20 +23,32 @@ const DEFAULT_CONFIG: Required<EventTrackerConfig> = {
 };
 
 class EventTracker implements Tracker {
+  private static instance: EventTracker;
   private events: TrackedEvent[] = [];
   private isProcessing = false;
   private timerId: number | undefined;
   private config: Required<EventTrackerConfig> & { endpoint: string };
+  private boundFlushOnUnload = this.flushOnUnload.bind(this);
 
-  constructor(endpoint: string, config: EventTrackerConfig = {}) {
+  private constructor(endpoint: string, config: EventTrackerConfig = {}) {
     this.config = { 
       ...DEFAULT_CONFIG, 
       endpoint,
       ...config 
     };
+  }
+
+  static getInstance(endpoint: string, config?: EventTrackerConfig): EventTracker {
+    if (!EventTracker.instance) {
+      EventTracker.instance = new EventTracker(endpoint, config);
+      EventTracker.instance.initialize();
+    }
+    return EventTracker.instance;
+  }
+
+  private initialize(): void {
     // Send any pending events when the page is being hidden/closed
-    const handleFinalSend = () => this.flushOnUnload();
-    window.addEventListener("pagehide", handleFinalSend);
+    window.addEventListener("pagehide", this.boundFlushOnUnload);
 
     // If there is a placeholder tracker with queued calls, replay them
     const temporaryTracker = window.tracker;
@@ -49,6 +61,11 @@ class EventTracker implements Tracker {
         }
       });
     }
+  }
+
+  cleanup(): void {
+    if (!EventTracker.instance) return;
+    window.removeEventListener("pagehide", this.boundFlushOnUnload);
   }
 
   track(event: string, ...tags: string[]): void {
@@ -158,4 +175,4 @@ class EventTracker implements Tracker {
 }
 
 // Replace placeholder with real tracker instance
-window.tracker = new EventTracker("http://localhost:8888/track");
+window.tracker = EventTracker.getInstance("http://localhost:8888/track");
