@@ -22,7 +22,7 @@ const DEFAULT_CONFIG: Required<EventTrackerConfig> = {
   immediateThreshold: 3,
 };
 
-class EventTracker implements Tracker {
+export class EventTracker implements Tracker {
   private static instance: EventTracker;
   private static isInitialized = false;
 
