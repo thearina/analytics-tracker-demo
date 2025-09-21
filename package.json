@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "author": "Arina M",
+  "type": "module",
   "scripts": {
     "start": "node dist/server.js",
     "format": "prettier --write .",

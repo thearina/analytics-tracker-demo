@@ -1,2 +1,2 @@
-import "./web.server";
-import "./tracker.server";
+import "./web.server.js";
+import "./tracker.server.js";

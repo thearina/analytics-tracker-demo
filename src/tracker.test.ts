@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { EventTracker } from "./tracker";
+import { EventTracker } from "./tracker.js";
 
 describe("EventTracker", () => {
   describe("Singleton behavior", () => {

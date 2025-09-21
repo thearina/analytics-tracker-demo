@@ -1,5 +1,6 @@
-import { type Model, model, models, Schema, connect } from "mongoose";
-import type { TracksBatch, Track } from "./types";
+import mongoose, { type Model } from "mongoose";
+const { model, models, Schema, connect } = mongoose;
+import type { TracksBatch, Track } from "./types.js";
 
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017";
 const MONGODB_DB = process.env.MONGODB_DB || "analyticstracker";

@@ -1,6 +1,7 @@
 <html>
   <head>
     <title>My website</title>
+    <script type="module" src="http://localhost:8888/tracker"></script>
     <script>
       if (!window.tracker) {
         const queue = [];
@@ -11,11 +12,6 @@
           queue,
         };
       }
-
-      const script = document.createElement("script");
-      script.async = true;
-      script.src = "http://localhost:8888/tracker";
-      document.head.appendChild(script);
 
       window.tracker.track("pageview");
       window.tracker.track("test", "one", "two", "three");

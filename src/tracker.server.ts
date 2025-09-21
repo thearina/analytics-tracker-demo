@@ -3,12 +3,17 @@ import express from "express";
 import cors from "cors";
 import { resolve as pathResolve } from "path";
 import { readFile } from "fs/promises";
-import { isTracksBatch } from "./utils";
-import { insertTracksBatch } from "./db";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+import { isTracksBatch } from "./utils.js";
+import { insertTracksBatch } from "./db.js";
 
 const trackerApp = express();
 const TRACKER_PORT = 8888;
 const WEB_PORT = Number(process.env.WEB_PORT) || 50000;
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 trackerApp.use(
   cors({
