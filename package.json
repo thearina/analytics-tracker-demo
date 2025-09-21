@@ -8,8 +8,8 @@
     "format": "prettier --write .",
     "build": "tsc",
     "prestart": "npm run build",
-    "test": "vitest",
-    "test:run": "vitest run",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "db:up": "docker compose up -d",
     "db:down": "docker compose down"
   },
