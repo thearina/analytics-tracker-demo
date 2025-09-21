@@ -24,6 +24,8 @@ const DEFAULT_CONFIG: Required<EventTrackerConfig> = {
 
 class EventTracker implements Tracker {
   private static instance: EventTracker;
+  private static isInitialized = false;
+
   private events: TrackedEvent[] = [];
   private isProcessing = false;
   private timerId: number | undefined;
@@ -31,22 +33,31 @@ class EventTracker implements Tracker {
   private boundFlushOnUnload = this.flushOnUnload.bind(this);
 
   private constructor(endpoint: string, config: EventTrackerConfig = {}) {
-    this.config = { 
-      ...DEFAULT_CONFIG, 
+    this.config = {
+      ...DEFAULT_CONFIG,
       endpoint,
-      ...config 
+      ...config,
     };
   }
 
-  static getInstance(endpoint: string, config?: EventTrackerConfig): EventTracker {
+  static getInstance(
+    endpoint: string,
+    config?: EventTrackerConfig,
+  ): EventTracker {
     if (!EventTracker.instance) {
       EventTracker.instance = new EventTracker(endpoint, config);
-      EventTracker.instance.initialize();
     }
     return EventTracker.instance;
   }
 
-  private initialize(): void {
+  initialize(): void {
+    // Idempotent
+    if (EventTracker.isInitialized) {
+      return;
+    }
+
+    // In case initialize was already called but failed only in the second part
+    window.removeEventListener("pagehide", this.boundFlushOnUnload);
     // Send any pending events when the page is being hidden/closed
     window.addEventListener("pagehide", this.boundFlushOnUnload);
 
@@ -61,6 +72,8 @@ class EventTracker implements Tracker {
         }
       });
     }
+
+    EventTracker.isInitialized = true;
   }
 
   cleanup(): void {
@@ -92,7 +105,10 @@ class EventTracker implements Tracker {
     if (this.events.length === 0) return;
 
     // If at least 3 events are queued and not currently sending, flush immediately
-    if (!this.isProcessing && this.events.length >= this.config.immediateThreshold) {
+    if (
+      !this.isProcessing &&
+      this.events.length >= this.config.immediateThreshold
+    ) {
       this.resetPendingFlush();
       void this.flush();
       return;
@@ -176,3 +192,4 @@ class EventTracker implements Tracker {
 
 // Replace placeholder with real tracker instance
 window.tracker = EventTracker.getInstance("http://localhost:8888/track");
+window.tracker.initialize?.();
