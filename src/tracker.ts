@@ -24,8 +24,6 @@ const DEFAULT_CONFIG: Required<EventTrackerConfig> = {
 
 export class EventTracker implements Tracker {
   private static instance: EventTracker;
-  private static isInitialized = false;
-
   private events: TrackedEvent[] = [];
   private isProcessing = false;
   private timerId: number | undefined;
@@ -40,24 +38,14 @@ export class EventTracker implements Tracker {
     };
   }
 
-  static getInstance(
-    endpoint: string,
-    config?: EventTrackerConfig,
-  ): EventTracker {
-    if (!EventTracker.instance) {
-      EventTracker.instance = new EventTracker(endpoint, config);
-    }
-    return EventTracker.instance;
+  static initialize(endpoint: string, config?: EventTrackerConfig): void {
+    if (EventTracker.instance) return;
+    EventTracker.instance = new EventTracker(endpoint, config);
+    EventTracker.instance.initialize();
+    window.tracker = EventTracker.instance;
   }
 
-  initialize(): void {
-    // Idempotent
-    if (EventTracker.isInitialized) {
-      return;
-    }
-
-    // In case initialize was already called but failed only in the second part
-    window.removeEventListener("pagehide", this.boundFlushOnPageHide);
+  private initialize(): void {
     // Send any pending events when the page is being hidden/closed
     window.addEventListener("pagehide", this.boundFlushOnPageHide);
 
@@ -72,8 +60,6 @@ export class EventTracker implements Tracker {
         }
       });
     }
-
-    EventTracker.isInitialized = true;
   }
 
   cleanup(): void {
@@ -190,6 +176,4 @@ export class EventTracker implements Tracker {
   }
 }
 
-// Replace placeholder with real tracker instance
-window.tracker = EventTracker.getInstance("http://localhost:8888/track");
-window.tracker.initialize?.();
+EventTracker.initialize("http://localhost:8888/track");
