@@ -30,7 +30,7 @@ export class EventTracker implements Tracker {
   private isProcessing = false;
   private timerId: number | undefined;
   private config: Required<EventTrackerConfig> & { endpoint: string };
-  private boundFlushOnUnload = this.flushOnUnload.bind(this);
+  private boundFlushOnPageHide = this.flushOnPageHide.bind(this);
 
   private constructor(endpoint: string, config: EventTrackerConfig = {}) {
     this.config = {
@@ -57,9 +57,9 @@ export class EventTracker implements Tracker {
     }
 
     // In case initialize was already called but failed only in the second part
-    window.removeEventListener("pagehide", this.boundFlushOnUnload);
+    window.removeEventListener("pagehide", this.boundFlushOnPageHide);
     // Send any pending events when the page is being hidden/closed
-    window.addEventListener("pagehide", this.boundFlushOnUnload);
+    window.addEventListener("pagehide", this.boundFlushOnPageHide);
 
     // If there is a placeholder tracker with queued calls, replay them
     const temporaryTracker = window.tracker;
@@ -78,7 +78,7 @@ export class EventTracker implements Tracker {
 
   cleanup(): void {
     if (!EventTracker.instance) return;
-    window.removeEventListener("pagehide", this.boundFlushOnUnload);
+    window.removeEventListener("pagehide", this.boundFlushOnPageHide);
   }
 
   track(event: string, ...tags: string[]): void {
@@ -159,7 +159,7 @@ export class EventTracker implements Tracker {
     }
   }
 
-  private flushOnUnload(): void {
+  private flushOnPageHide(): void {
     if (this.events.length === 0) return;
 
     this.resetPendingFlush();
