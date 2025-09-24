@@ -25,7 +25,7 @@ trackerApp.use(
 
 trackerApp.get("/tracker", async (req, res) => {
   try {
-    const filePath = pathResolve(__dirname, "tracker.js");
+    const filePath = pathResolve(__dirname, "..", "client", "tracker.js");
     const js = await readFile(filePath, "utf8");
     res.type("application/javascript").send(js);
   } catch (e) {

@@ -9,7 +9,14 @@ const WEB_PORT = Number(process.env.WEB_PORT) || 50000;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const staticFilePath = pathResolve(__dirname, "../src/index.html");
+const staticFilePath = pathResolve(
+  __dirname,
+  "..",
+  "..",
+  "src",
+  "static",
+  "index.html",
+);
 
 webApp.get("/", (req, res) => {
   res.redirect("/1.html");

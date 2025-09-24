@@ -5,7 +5,7 @@
   "author": "Arina M",
   "type": "module",
   "scripts": {
-    "start": "node dist/server.js",
+    "start": "node dist/server/server.js",
     "format": "prettier --write .",
     "build": "tsc",
     "prestart": "npm run build",
