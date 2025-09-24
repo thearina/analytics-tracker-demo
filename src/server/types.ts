@@ -8,3 +8,8 @@ export interface Track {
 
 // Not empty array of Tracks
 export type TracksBatch = [Track, ...Track[]];
+
+export type SendFileError = NodeJS.ErrnoException & {
+  status?: number;
+  statusCode?: number;
+};

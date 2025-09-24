@@ -11,7 +11,7 @@ const connectPromise = connect(MONGODB_URI, {
   serverSelectionTimeoutMS: 3000,
 });
 
-void connectPromise
+connectPromise
   .then(() => {
     console.log(`Connected to MongoDB at ${MONGODB_URI}/${MONGODB_DB}`);
   })

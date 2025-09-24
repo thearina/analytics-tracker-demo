@@ -2,10 +2,10 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import { resolve as pathResolve } from "path";
-import { readFile } from "fs/promises";
 import { isTracksBatch } from "./utils.js";
 import { insertTracksBatch } from "./db.js";
 import { cwd } from "node:process";
+import { SendFileError } from "./types";
 
 const trackerApp = express();
 const TRACKER_PORT = 8888;
@@ -24,12 +24,20 @@ trackerApp.use(
 );
 
 trackerApp.get("/tracker", async (req, res) => {
-  try {
-    const js = await readFile(TRACKER_SCRIPT_PATH, "utf8");
-    res.type("application/javascript").send(js);
-  } catch (e) {
-    res.status(500).type("text/plain").send("Tracker is not built");
-  }
+  res.sendFile(TRACKER_SCRIPT_PATH, (err) => {
+    if (!err) return;
+
+    const e = err as SendFileError;
+    const status =
+      e.status ?? e.statusCode ?? (e.code === "ENOENT" ? 404 : 500);
+
+    res
+      .status(status)
+      .type("text/plain")
+      .send(
+        status === 404 ? "Tracker is not built" : "Failed to send tracker.js",
+      );
+  });
 });
 
 trackerApp.post("/track", express.text({ type: "text/plain" }), (req, res) => {
