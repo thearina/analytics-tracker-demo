@@ -3,17 +3,17 @@ import express from "express";
 import cors from "cors";
 import { resolve as pathResolve } from "path";
 import { readFile } from "fs/promises";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
 import { isTracksBatch } from "./utils.js";
 import { insertTracksBatch } from "./db.js";
+import { cwd } from "node:process";
 
 const trackerApp = express();
 const TRACKER_PORT = 8888;
 const WEB_PORT = Number(process.env.WEB_PORT) || 50000;
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// Build path to compiled client tracker using current working directory
+// Assumes process started from project root so dist/client/tracker.js exists after build
+const TRACKER_SCRIPT_PATH = pathResolve(cwd(), "dist", "client", "tracker.js");
 
 trackerApp.use(
   cors({
@@ -25,8 +25,7 @@ trackerApp.use(
 
 trackerApp.get("/tracker", async (req, res) => {
   try {
-    const filePath = pathResolve(__dirname, "..", "client", "tracker.js");
-    const js = await readFile(filePath, "utf8");
+    const js = await readFile(TRACKER_SCRIPT_PATH, "utf8");
     res.type("application/javascript").send(js);
   } catch (e) {
     res.status(500).type("text/plain").send("Tracker is not built");
