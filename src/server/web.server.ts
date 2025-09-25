@@ -1,6 +1,6 @@
 import "dotenv/config";
 import express from "express";
-import { resolve as pathResolve } from "path";
+import { resolve as pathResolve } from "node:path";
 import { cwd } from "node:process";
 import type { SendFileError } from "./types.js";
 

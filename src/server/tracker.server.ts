@@ -1,7 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import { resolve as pathResolve } from "path";
+import { resolve as pathResolve } from "node:path";
 import { isTracksBatch } from "./utils.js";
 import { insertTracksBatch } from "./db.js";
 import { cwd } from "node:process";
