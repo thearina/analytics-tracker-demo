@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { Track, TracksBatch } from "./types.js";
+import type { Track, TracksBatch } from "./server.types.js";
 
 export const TrackSchema = z.object({
   event: z.string(),

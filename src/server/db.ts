@@ -1,5 +1,5 @@
 import mongoose, { type Model } from "mongoose";
-import type { TracksBatch, Track } from "./types.js";
+import type { TracksBatch, Track } from "./server.types.js";
 
 const { model, models, Schema, connect } = mongoose;
 

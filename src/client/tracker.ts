@@ -1,6 +1,4 @@
-interface Tracker {
-  track(event: string, ...tags: string[]): void;
-}
+import type { Tracker } from "./tracker.types.js";
 
 interface TrackedEvent {
   event: string;

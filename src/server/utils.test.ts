@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { isTrack, isTracksBatch } from "./utils.js";
-import type { Track } from "./types.js";
+import type { Track } from "./server.types.js";
 
 describe("utils", () => {
   describe("isTrack", () => {
