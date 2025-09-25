@@ -1,6 +1,6 @@
-type QueuedCall = [event: string, ...tags: string[]];
+type TrackArgs = [event: string, ...tags: string[]];
 
 export interface Tracker {
-  track(event: string, ...tags: string[]): void;
-  queue?: QueuedCall[];
+  track(...trackArgs: TrackArgs): void;
+  queue?: TrackArgs[];
 }
