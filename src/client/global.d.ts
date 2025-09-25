@@ -2,7 +2,7 @@
  * `export` or `import` can make file a module (instead of a script).
  * See https://www.typescriptlang.org/docs/handbook/2/modules.html#non-modules
  */
-import type { Tracker } from "./tracker.types.js";
+import type { Tracker } from "./tracker.types.ts";
 
 /**
  * In modules this is the way to augment global types.
