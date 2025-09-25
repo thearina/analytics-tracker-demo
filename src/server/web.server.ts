@@ -2,7 +2,7 @@ import "dotenv/config";
 import express from "express";
 import { resolve as pathResolve } from "path";
 import { cwd } from "node:process";
-import { SendFileError } from "./types";
+import type { SendFileError } from "./types.js";
 
 const webApp = express();
 const WEB_PORT = Number(process.env.WEB_PORT) || 50000;

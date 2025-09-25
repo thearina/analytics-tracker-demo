@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node dist/server/server.js",
     "format": "prettier --write .",
-    "build": "tsc",
+    "build": "tsc -p tsconfig.build.json",
     "prestart": "npm run build",
     "test": "vitest run",
     "test:watch": "vitest",

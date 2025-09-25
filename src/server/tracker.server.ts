@@ -5,7 +5,7 @@ import { resolve as pathResolve } from "path";
 import { isTracksBatch } from "./utils.js";
 import { insertTracksBatch } from "./db.js";
 import { cwd } from "node:process";
-import { SendFileError } from "./types";
+import type { SendFileError } from "./types.js";
 
 const trackerApp = express();
 const TRACKER_PORT = 8888;
