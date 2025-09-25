@@ -40,7 +40,6 @@ export class EventTracker implements Tracker {
     if (EventTracker.instance) return;
     EventTracker.instance = new EventTracker(endpoint, config);
     EventTracker.instance.initialize();
-    window.tracker = EventTracker.instance;
   }
 
   private initialize(): void {
@@ -58,6 +57,7 @@ export class EventTracker implements Tracker {
         }
       });
     }
+    window.tracker = this;
   }
 
   cleanup(): void {
