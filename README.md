@@ -1,4 +1,15 @@
-# Analytics Tracker
+# Analytics Tracker Demo
+
+A lightweight web analytics prototype built with TypeScript, Express and MongoDB. It provides a browser-side event tracker that collects user actions, batches them, and sends them to a backend API. The server validates incoming tracking payloads and stores them in MongoDB for further analysis.
+
+The project includes:
+- a client-side tracker with event queueing and batching;
+- retry logic for failed network requests;
+- `sendBeacon` / `keepalive` support for sending events before page unload;
+- an Express API for receiving tracking events;
+- Zod-based validation of incoming payloads;
+- MongoDB persistence via Mongoose;
+- demo pages and local development setup with Docker Compose.
 
 ---
 
